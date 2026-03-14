@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveAccentCoach — Project Analysis Flowchart</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --surface: #111827;
+  --surface2: #1a2236;
+  --border: #2a3550;
+  --text: #e2e8f0;
+  --text-dim: #8892a8;
+  --green: #22c55e;
+  --green-bg: rgba(34,197,94,.12);
+  --red: #ef4444;
+  --red-bg: rgba(239,68,68,.12);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,.12);
+  --blue: #3b82f6;
+  --blue-bg: rgba(59,130,246,.12);
+  --purple: #a855f7;
+  --purple-bg: rgba(168,85,247,.12);
+  --cyan: #06b6d4;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 40px 24px; }
+
+h1 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.subtitle { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 40px; }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card .number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-card .label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+.stat-card.green .number { color: var(--green); }
+.stat-card.red .number { color: var(--red); }
+.stat-card.amber .number { color: var(--amber); }
+.stat-card.blue .number { color: var(--blue); }
+.stat-card.purple .number { color: var(--purple); }
+
+/* Filter tabs */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.filter-tab:hover { border-color: var(--cyan); color: var(--text); }
+.filter-tab.active { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+/* Section */
+.section {
+  margin-bottom: 48px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-header h2 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.section-badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-red { background: var(--red-bg); color: var(--red); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+.badge-blue { background: var(--blue-bg); color: var(--blue); }
+
+/* Flow items */
+.flow-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+.flow-item {
+  display: grid;
+  grid-template-columns: 32px 1fr 120px 100px;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-left: 3px solid transparent;
+  transition: all .15s;
+  font-size: 0.9rem;
+}
+
+.flow-item:first-child { border-radius: 8px 8px 0 0; }
+.flow-item:last-child { border-radius: 0 0 8px 8px; }
+.flow-item:hover { background: var(--surface2); }
+
+.flow-item.complete { border-left-color: var(--green); }
+.flow-item.pending { border-left-color: var(--red); }
+.flow-item.partial { border-left-color: var(--amber); }
+.flow-item.bug { border-left-color: var(--purple); }
+
+.flow-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.flow-icon.done { background: var(--green-bg); color: var(--green); }
+.flow-icon.miss { background: var(--red-bg); color: var(--red); }
+.flow-icon.warn { background: var(--amber-bg); color: var(--amber); }
+.flow-icon.fix { background: var(--purple-bg); color: var(--purple); }
+
+.flow-item .file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.flow-item .tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.tag-complete { background: var(--green-bg); color: var(--green); }
+.tag-pending { background: var(--red-bg); color: var(--red); }
+.tag-partial { background: var(--amber-bg); color: var(--amber); }
+.tag-bug { background: var(--purple-bg); color: var(--purple); }
+
+/* Architecture flow */
+.arch-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin: 32px 0;
+}
+
+.arch-node {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 32px;
+  text-align: center;
+  min-width: 320px;
+  position: relative;
+}
+
+.arch-node h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.arch-node .items { color: var(--text-dim); font-size: 0.8rem; }
+
+.arch-arrow {
+  width: 2px;
+  height: 32px;
+  background: var(--border);
+  position: relative;
+}
+
+.arch-arrow::after {
+  content: '▼';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--cyan);
+  font-size: 0.7rem;
+}
+
+.arch-arrow-label {
+  font-size: 0.7rem;
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  margin: 4px 0;
+}
+
+/* Issues table */
+.issues-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.issue-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.issue-card .severity {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.severity.critical { background: var(--red-bg); color: var(--red); }
+.severity.high { background: var(--amber-bg); color: var(--amber); }
+.severity.medium { background: var(--blue-bg); color: var(--blue); }
+.severity.low { background: var(--purple-bg); color: var(--purple); }
+
+.issue-card .desc { font-size: 0.88rem; }
+.issue-card .desc .file-ref {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--cyan);
+  display: block;
+  margin-top: 4px;
+}
+
+.issue-card .category {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.g { background: var(--green); }
+.legend-dot.r { background: var(--red); }
+.legend-dot.a { background: var(--amber); }
+.legend-dot.p { background: var(--purple); }
+
+@media (max-width: 768px) {
+  .flow-item { grid-template-columns: 24px 1fr 80px; }
+  .flow-item .file { display: none; }
+  .arch-node { min-width: auto; width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>LiveAccentCoach — Full Project Analysis</h1>
+<p class="subtitle">Comprehensive audit of all 49 files &middot; March 13, 2026 &middot; Deadline: March 16</p>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card green"><div class="number">31</div><div class="label">Completed Items</div></div>
+  <div class="stat-card red"><div class="number">18</div><div class="label">Pending / Missing</div></div>
+  <div class="stat-card amber"><div class="number">12</div><div class="label">Bugs & Issues</div></div>
+  <div class="stat-card blue"><div class="number">49</div><div class="label">Total Files</div></div>
+  <div class="stat-card purple"><div class="number">3</div><div class="label">Days Left</div></div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot g"></div> Complete — Working code</div>
+  <div class="legend-item"><div class="legend-dot r"></div> Pending — Not implemented</div>
+  <div class="legend-item"><div class="legend-dot a"></div> Partial — Stub / Mock only</div>
+  <div class="legend-item"><div class="legend-dot p"></div> Bug / Issue — Needs fix</div>
+</div>
+
+<!-- Filter tabs -->
+<div class="filter-tabs">
+  <button class="filter-tab active" onclick="filterAll()">All</button>
+  <button class="filter-tab" onclick="filterStatus('complete')">Complete</button>
+  <button class="filter-tab" onclick="filterStatus('pending')">Pending</button>
+  <button class="filter-tab" onclick="filterStatus('partial')">Partial / Mock</button>
+  <button class="filter-tab" onclick="filterStatus('bug')">Bugs & Issues</button>
+</div>
+
+<!-- ============ ARCHITECTURE FLOW ============ -->
+<div class="section">
+  <div class="section-header">
+    <h2>Architecture Data Flow</h2>
+    <span class="section-badge badge-blue">System Overview</span>
+  </div>
+
+  <div class="arch-flow">
+    <div class="arch-node" style="border-color: var(--green);">
+      <h3 style="color:var(--green);">Browser (Next.js + React)</h3>
+      <div class="items">Camera + Mic capture &rarr; MediaPipe face/hand detection &rarr; Three.js avatar &rarr; Audio PCM encoding</div>
+    </div>
+    <div class="arch-arrow"></div>
+    <div class="arch-arrow-label">WebSocket (JSON + base64 audio)</div>
+    <div class="arch-arrow"></div>
+    <div class="arch-node" style="border-color: var(--amber);">
+      <h3 style="color:var(--amber);">FastAPI Backend (Python)</h3>
+      <div class="items">Audio decode &rarr; AccentCoach (MOCK) &rarr; Pronunciation scoring &rarr; Session management</div>
+    </div>
+    <div class="arch-arrow"></div>
+    <div class="arch-arrow-label">PENDING: Gemini Live API integration</div>
+    <div class="arch-arrow"></div>
+    <div class="arch-node" style="border-color: var(--red);">
+      <h3 style="color:var(--red);">Gemini Live API (Not Connected)</h3>
+      <div class="items">gemini-2.5-flash-native-audio-preview &middot; ADK Toolkit &middot; Context window compression</div>
+    </div>
+    <div class="arch-arrow"></div>
+    <div class="arch-arrow-label">PENDING: GCP credentials</div>
+    <div class="arch-arrow"></div>
+    <div class="arch-node" style="border-color: var(--red);">
+      <h3 style="color:var(--red);">GCP Services (Local Fallback Active)</h3>
+      <div class="items">Firestore (JSON file) &middot; Cloud Storage (local dir) &middot; Cloud Run (not deployed)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BACKEND ============ -->
+<div class="section" id="backend">
+  <div class="section-header">
+    <h2>Backend — Python / FastAPI</h2>
+    <span class="section-badge badge-green">16 files</span>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>FastAPI server with CORS, health check, lifespan<span class="file">main.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>WebSocket endpoint /ws/coach with message routing<span class="file">main.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>REST endpoints: GET sessions, GET progress, POST recording<span class="file">main.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Audio PCM validation, chunking, base64 encode/decode, RMS level<span class="file">handlers/audio.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>WebSocket handler class with connection tracking<span class="file">handlers/websocket.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item partial" data-status="partial">
+      <div class="flow-icon warn">!</div>
+      <div>AccentCoach — Session management works, but <strong>send_audio_chunk returns MOCK data only</strong><span class="file">coaches/accent_coach.py</span></div>
+      <div class="tag tag-partial">Mock Only</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Gemini Live API integration (ADK LiveRequestQueue, run_live, streaming)<span class="file">coaches/accent_coach.py</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Context window compression config (CRITICAL for video sessions &gt; 2 min)<span class="file">coaches/accent_coach.py</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Affective dialog, voice selection, thinking config for Gemini<span class="file">coaches/accent_coach.py</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Pronunciation scorer — multi-pattern regex extraction (score, corrections, tips)<span class="file">services/pronunciation.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Firestore service with local JSON fallback, save/retrieve sessions<span class="file">services/firestore.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Cloud Storage service with local file fallback, upload recordings<span class="file">services/cloud_storage.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Pydantic schemas: AudioChunk, CoachingResponse, SessionData, RecordingUploadRequest<span class="file">models/schemas.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>System prompts and drill templates<span class="file">utils/prompts.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Config: env vars, audio settings, Gemini model, Firestore collections<span class="file">config.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Integration test suite (audio, scoring, config)<span class="file">test_integration.py</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>PronunciationScorer is imported in tests but <strong>never used in actual coaching flow</strong><span class="file">services/pronunciation.py</span></div>
+      <div class="tag tag-bug">Unused</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>WebSocketHandler class instantiated but <strong>never used</strong> — main.py handles WS directly<span class="file">handlers/websocket.py</span></div>
+      <div class="tag tag-bug">Dead Code</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>datetime.utcnow() used in get_session_status() — <strong>deprecated</strong>, rest uses timezone.utc<span class="file">coaches/accent_coach.py:114</span></div>
+      <div class="tag tag-bug">Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>CORS allow_origins=["*"] with allow_credentials=True — <strong>security issue</strong><span class="file">main.py:69</span></div>
+      <div class="tag tag-bug">Security</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>requirements.txt: mediapipe==0.10.0 listed but <strong>not used in backend</strong> (it's frontend-only)<span class="file">requirements.txt:7</span></div>
+      <div class="tag tag-bug">Waste</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>requirements.txt: websockets==12.0 listed but FastAPI uses built-in WS, <strong>not needed</strong><span class="file">requirements.txt:10</span></div>
+      <div class="tag tag-bug">Waste</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>Bare except clauses (lines 331-332, 346-347) swallow all errors silently<span class="file">main.py</span></div>
+      <div class="tag tag-bug">Quality</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No user authentication — user_id is random UUID per connection<span class="file">main.py:170</span></div>
+      <div class="tag tag-pending">Missing</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No rate limiting on WebSocket or REST endpoints<span class="file">main.py</span></div>
+      <div class="tag tag-pending">Missing</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FRONTEND ============ -->
+<div class="section" id="frontend">
+  <div class="section-header">
+    <h2>Frontend — Next.js / React / TypeScript</h2>
+    <span class="section-badge badge-green">21 files</span>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>CoachSession orchestrator — gesture controls, audio streaming, avatar sync<span class="file">components/CoachSession.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>VideoCanvas — camera feed with face/hand landmark overlays<span class="file">components/VideoCanvas.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>AvatarDisplay — Three.js container with blendshape sync<span class="file">components/AvatarDisplay.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>FeedbackPanel — score display, corrections, tips, recording link<span class="file">components/FeedbackPanel.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>ControlButtons — start/stop coaching, mic toggle<span class="file">components/ControlButtons.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>HandGestureOverlay — gesture label, confidence, hold duration<span class="file">components/HandGestureOverlay.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>GestureHint — thumbs up/down instructions<span class="file">components/GestureHint.tsx</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>useWebSocket — connection, send audio, end session, normalize response<span class="file">hooks/useWebSocket.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>useAudioStream — mic capture, PCM conversion, volume meter<span class="file">hooks/useAudioStream.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>useMediaPipe — FaceLandmarker + HandLandmarker init and detection loop<span class="file">hooks/useMediaPipe.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>useHandGesture — thumbs up/down detection with hold duration<span class="file">hooks/useHandGesture.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>useThreeJsAvatar — scene, camera, renderer, GLTF loader, blendshape apply<span class="file">hooks/useThreeJsAvatar.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>GestureDetector — thumbs up/down from landmarks, confidence, hold tracking<span class="file">utils/gestureDetector.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>AvatarSync — MediaPipe blendshape → Three.js morph target mapping + smoothing<span class="file">utils/avatarSync.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>AudioProcessor — PCM conversion, chunking, Int16 to bytes<span class="file">utils/audioProcessor.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>TypeScript types — all interfaces defined (landmarks, gestures, coaching, session)<span class="file">types/index.ts</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>package.json: three version "^r158" is <strong>invalid semver</strong> — should be "^0.158.0"<span class="file">package.json:17</span></div>
+      <div class="tag tag-bug">Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>package.json: @types/three "^r158" is <strong>invalid semver</strong> — should be "^0.158.0"<span class="file">package.json:29</span></div>
+      <div class="tag tag-bug">Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>VideoCanvas: requestAnimationFrame loop <strong>never cancelled</strong> — leaks on re-render<span class="file">components/VideoCanvas.tsx:125</span></div>
+      <div class="tag tag-bug">Memory Leak</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>useThreeJsAvatar called <strong>twice</strong> — once in CoachSession, once in AvatarDisplay (duplicate scene)<span class="file">CoachSession.tsx:47 + AvatarDisplay.tsx:19</span></div>
+      <div class="tag tag-bug">Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>useWebSocket has <strong>no reconnection logic</strong> — drops silently on disconnect<span class="file">hooks/useWebSocket.ts</span></div>
+      <div class="tag tag-bug">Missing</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>useMediaPipe: FaceLandmarker missing <strong>outputFaceBlendshapes: true</strong> — blendshapes won't be returned<span class="file">hooks/useMediaPipe.ts:34</span></div>
+      <div class="tag tag-bug">Critical Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>ScriptProcessorNode is <strong>deprecated</strong> — should use AudioWorklet for production<span class="file">hooks/useAudioStream.ts:58</span></div>
+      <div class="tag tag-bug">Deprecation</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Avatar model file (avatar.glb) <strong>does not exist</strong> in public/models/<span class="file">public/models/avatar.glb</span></div>
+      <div class="tag tag-pending">Missing Asset</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No progress dashboard page (planned in sprint)<span class="file">pages/progress.tsx</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No camera permission request flow — just fails silently<span class="file">hooks/useMediaPipe.ts</span></div>
+      <div class="tag tag-pending">Missing UX</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No Gemini audio playback — backend doesn't stream audio responses back<span class="file">hooks/useWebSocket.ts</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>npm install never run — node_modules doesn't exist<span class="file">frontend/</span></div>
+      <div class="tag tag-pending">Not Installed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INFRA & DEPLOYMENT ============ -->
+<div class="section" id="infra">
+  <div class="section-header">
+    <h2>Infrastructure & Deployment</h2>
+    <span class="section-badge badge-red">Mostly Pending</span>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Dockerfile for backend (Python 3.11-slim, pip install, health check)<span class="file">infra/Dockerfile</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Cloud Run deploy script (docker build, push, gcloud run deploy)<span class="file">infra/deploy.sh</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item complete" data-status="complete">
+      <div class="flow-icon done">&#10003;</div>
+      <div>Setup scripts for Windows (setup.bat) and Linux (setup.sh)<span class="file">setup.bat, setup.sh</span></div>
+      <div class="tag tag-complete">Complete</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>Dockerfile HEALTHCHECK uses <strong>requests</strong> which is <strong>not in requirements.txt</strong><span class="file">infra/Dockerfile:24</span></div>
+      <div class="tag tag-bug">Bug</div>
+    </div>
+    <div class="flow-item bug" data-status="bug">
+      <div class="flow-icon fix">B</div>
+      <div>deploy.sh uses deprecated <strong>gcr.io</strong> — should use Artifact Registry<span class="file">infra/deploy.sh:10</span></div>
+      <div class="tag tag-bug">Outdated</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>GCP project not created — no credentials configured<span class="file">.env</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Firestore database not provisioned on GCP<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Cloud Storage bucket not created<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Cloud Run deployment not executed<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Frontend deployment (Vercel or Firebase Hosting)<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>No git repository initialized<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HACKATHON REQUIREMENTS ============ -->
+<div class="section" id="hackathon">
+  <div class="section-header">
+    <h2>Hackathon Mandatory Requirements</h2>
+    <span class="section-badge badge-red">6 of 9 Pending</span>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-item partial" data-status="partial">
+      <div class="flow-icon warn">!</div>
+      <div>Leverage a Gemini model — config exists but <strong>not connected</strong><span class="file">config.py</span></div>
+      <div class="tag tag-partial">Config Only</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Built using Google GenAI SDK or ADK — <strong>neither imported or used</strong><span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item partial" data-status="partial">
+      <div class="flow-icon warn">!</div>
+      <div>Use at least one Google Cloud service — code ready but <strong>running in local fallback</strong><span class="file">services/</span></div>
+      <div class="tag tag-partial">Fallback</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Must use Gemini Live API — <strong>not integrated at all</strong><span class="file">—</span></div>
+      <div class="tag tag-pending">Critical</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Backend hosted on Google Cloud — <strong>not deployed</strong><span class="file">—</span></div>
+      <div class="tag tag-pending">Critical</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Public code repository with spin-up instructions<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Proof of Google Cloud deployment (screen recording)<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>Architecture diagram (visual)<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+    <div class="flow-item pending" data-status="pending">
+      <div class="flow-icon miss">&#10007;</div>
+      <div>&lt; 4-minute demo video showing real-time features<span class="file">—</span></div>
+      <div class="tag tag-pending">Not Started</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ALL ISSUES ============ -->
+<div class="section" id="issues">
+  <div class="section-header">
+    <h2>All Issues Found (Priority Order)</h2>
+    <span class="section-badge badge-red">12 Issues</span>
+  </div>
+
+  <div class="issues-grid">
+    <div class="issue-card">
+      <div class="severity critical">CRITICAL</div>
+      <div class="desc">
+        <strong>Gemini Live API not integrated at all</strong> — AccentCoach.send_audio_chunk() returns hardcoded mock data. The entire coaching loop is fake. This is the #1 hackathon requirement.
+        <span class="file-ref">backend/coaches/accent_coach.py:56-75</span>
+      </div>
+      <div class="category">Incomplete</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity critical">CRITICAL</div>
+      <div class="desc">
+        <strong>FaceLandmarker missing outputFaceBlendshapes: true</strong> — Without this config flag, MediaPipe will NOT return blendshape data. The entire avatar mouth-sync feature silently fails.
+        <span class="file-ref">frontend/src/hooks/useMediaPipe.ts:34-39</span>
+      </div>
+      <div class="category">Bug</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity critical">CRITICAL</div>
+      <div class="desc">
+        <strong>Avatar model file missing</strong> — public/models/avatar.glb does not exist. Three.js will fail to load, falling back to a red cube placeholder.
+        <span class="file-ref">frontend/public/models/avatar.glb</span>
+      </div>
+      <div class="category">Missing Asset</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity critical">CRITICAL</div>
+      <div class="desc">
+        <strong>package.json has invalid semver for three.js</strong> — "^r158" is not valid. npm install will fail. Should be "^0.158.0" for three and "@types/three".
+        <span class="file-ref">frontend/package.json:17,29</span>
+      </div>
+      <div class="category">Bug</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity high">HIGH</div>
+      <div class="desc">
+        <strong>useThreeJsAvatar called twice</strong> — CoachSession.tsx creates one instance and AvatarDisplay.tsx creates another. Two WebGL renderers, two scenes, two animation loops. Wastes GPU and causes conflicts.
+        <span class="file-ref">CoachSession.tsx:47 + AvatarDisplay.tsx:19</span>
+      </div>
+      <div class="category">Bug</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity high">HIGH</div>
+      <div class="desc">
+        <strong>WebSocket has no reconnection logic</strong> — If the connection drops, the user is stuck with "Backend Disconnected" forever. No retry, no exponential backoff.
+        <span class="file-ref">frontend/src/hooks/useWebSocket.ts</span>
+      </div>
+      <div class="category">Missing Feature</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity high">HIGH</div>
+      <div class="desc">
+        <strong>VideoCanvas animation frame leak</strong> — requestAnimationFrame is called in useEffect but the returned ID is never stored or cancelled on cleanup. Creates infinite render loops on re-render.
+        <span class="file-ref">frontend/src/components/VideoCanvas.tsx:125</span>
+      </div>
+      <div class="category">Memory Leak</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity high">HIGH</div>
+      <div class="desc">
+        <strong>Dockerfile HEALTHCHECK uses requests library</strong> — The Python requests package is not in requirements.txt, so the health check will always fail in the container.
+        <span class="file-ref">infra/Dockerfile:24</span>
+      </div>
+      <div class="category">Bug</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity medium">MEDIUM</div>
+      <div class="desc">
+        <strong>CORS wildcard + credentials</strong> — allow_origins=["*"] with allow_credentials=True is a security anti-pattern. Browsers will block credentialed requests with wildcard origin.
+        <span class="file-ref">backend/main.py:68-73</span>
+      </div>
+      <div class="category">Security</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity medium">MEDIUM</div>
+      <div class="desc">
+        <strong>datetime.utcnow() deprecated</strong> — Used in get_session_status() but the rest of the codebase correctly uses datetime.now(timezone.utc). Inconsistent and deprecated since Python 3.12.
+        <span class="file-ref">backend/coaches/accent_coach.py:114</span>
+      </div>
+      <div class="category">Bug</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity medium">MEDIUM</div>
+      <div class="desc">
+        <strong>PronunciationScorer never used in coaching flow</strong> — It's tested but never called from AccentCoach or the WebSocket handler. Score extraction from Gemini responses is dead code.
+        <span class="file-ref">backend/services/pronunciation.py</span>
+      </div>
+      <div class="category">Dead Code</div>
+    </div>
+
+    <div class="issue-card">
+      <div class="severity low">LOW</div>
+      <div class="desc">
+        <strong>Unnecessary dependencies in requirements.txt</strong> — mediapipe (frontend-only) and websockets (FastAPI has built-in WS) add ~500MB to Docker image for no reason.
+        <span class="file-ref">backend/requirements.txt:7,10</span>
+      </div>
+      <div class="category">Optimization</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRIORITY ACTION PLAN ============ -->
+<div class="section" id="actions">
+  <div class="section-header">
+    <h2>Priority Action Plan (3 Days Remaining)</h2>
+    <span class="section-badge badge-amber">Deadline: Mar 16</span>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--red); background: var(--red-bg);">
+      <div class="flow-icon miss" style="font-size:0.9rem;">1</div>
+      <div><strong>DAY 1 (Mar 14):</strong> Integrate Gemini Live API via ADK into AccentCoach — replace mock with real streaming</div>
+      <div class="tag tag-pending">Blocker</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--red); background: var(--red-bg);">
+      <div class="flow-icon miss" style="font-size:0.9rem;">2</div>
+      <div><strong>DAY 1 (Mar 14):</strong> Fix package.json three.js versions, add outputFaceBlendshapes, get avatar.glb model</div>
+      <div class="tag tag-pending">Blocker</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--amber);">
+      <div class="flow-icon warn" style="font-size:0.9rem;">3</div>
+      <div><strong>DAY 1 (Mar 14):</strong> Fix duplicate useThreeJsAvatar, VideoCanvas leak, add WS reconnection</div>
+      <div class="tag tag-partial">High</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--amber);">
+      <div class="flow-icon warn" style="font-size:0.9rem;">4</div>
+      <div><strong>DAY 2 (Mar 15):</strong> Set up GCP project, Firestore, Cloud Storage, deploy to Cloud Run</div>
+      <div class="tag tag-partial">High</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--amber);">
+      <div class="flow-icon warn" style="font-size:0.9rem;">5</div>
+      <div><strong>DAY 2 (Mar 15):</strong> Deploy frontend to Vercel, test end-to-end in production</div>
+      <div class="tag tag-partial">High</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--blue);">
+      <div class="flow-icon miss" style="font-size:0.9rem;">6</div>
+      <div><strong>DAY 3 (Mar 16):</strong> Record demo video, create architecture diagram, push to public GitHub</div>
+      <div class="tag tag-pending">Required</div>
+    </div>
+    <div class="flow-item pending" data-status="pending" style="border-left-color: var(--blue);">
+      <div class="flow-icon miss" style="font-size:0.9rem;">7</div>
+      <div><strong>DAY 3 (Mar 16):</strong> Submit to Devpost before 8:00 PM EDT</div>
+      <div class="tag tag-pending">Deadline</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function filterAll() {
+  document.querySelectorAll('.flow-item').forEach(el => el.style.display = '');
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.filter-tab').classList.add('active');
+}
+
+function filterStatus(status) {
+  document.querySelectorAll('.flow-item').forEach(el => {
+    el.style.display = el.dataset.status === status ? '' : 'none';
+  });
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

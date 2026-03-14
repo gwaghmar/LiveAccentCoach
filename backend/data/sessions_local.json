@@ -1,0 +1,44 @@
+[
+  {
+    "session_id": "test-session-123",
+    "duration": 120,
+    "average_accuracy": 85,
+    "num_utterances": 5,
+    "user_id": "test-user",
+    "saved_at": "2026-03-13T22:11:08.219667+00:00"
+  },
+  {
+    "session_id": "test-session-123",
+    "duration": 120,
+    "average_accuracy": 85,
+    "num_utterances": 5,
+    "user_id": "test-user",
+    "saved_at": "2026-03-13T22:12:43.362862+00:00"
+  },
+  {
+    "session_id": "test-session-123",
+    "duration": 120,
+    "average_accuracy": 85,
+    "num_utterances": 5,
+    "user_id": "test-user",
+    "saved_at": "2026-03-13T22:13:21.963035+00:00"
+  },
+  {
+    "session_id": "test-session-123",
+    "duration": 120,
+    "average_accuracy": 85,
+    "num_utterances": 5,
+    "user_id": "test-user",
+    "saved_at": "2026-03-13T22:13:48.287465+00:00"
+  },
+  {
+    "session_id": "225d0f88-d3dd-4038-9524-fdf7a230b359",
+    "user_id": "57fe2dcd-61cd-4484-9185-f2b3e4f924c8",
+    "duration": 1.928205,
+    "num_utterances": 0,
+    "average_accuracy": 0,
+    "best_accuracy": 0,
+    "scores": [],
+    "saved_at": "2026-03-14T05:58:55.546502+00:00"
+  }
+]
