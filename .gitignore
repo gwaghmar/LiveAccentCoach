@@ -55,3 +55,24 @@ htmlcov/
 *.egg-info/
 dist/
 build/
+
+# Screenshots / debug artifacts
+ss_*.png
+screenshot_*.png
+screenshot_app.py
+build_log*.txt
+BUILD_STATUS.md
+SESSION_SNAPSHOT.md
+
+# Backend runtime data
+backend/data/recordings/
+backend/data/storage/
+backend/backend.log
+backend/backend_stdout.log
+
+# Frontend backup
+frontend/src_backup_working_gemini_live/
+frontend/tsconfig.tsbuildinfo
+
+# Reference docs (local only)
+reference/
